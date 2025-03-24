@@ -17,20 +17,35 @@ uint8_t CANBusGateway::last_states[256];
 unsigned long CANBusGateway::last_received_times[256];
 FanSafetyManager CANBusGateway::fan_safety;
 
-// FlexCAN instance
+// FlexCAN instance with error callback
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can0;
+void canSniff(const CAN_message_t &msg) {
+    // Log received messages
+    Serial.printf("RX ID: 0x%X [%d] ", msg.id, msg.len);
+    for (int i = 0; i < msg.len; i++) {
+        Serial.printf("%02X ", msg.buf[i]);
+    }
+    Serial.println();
+}
 
 // GPIO Manager instance
 GPIOManager gpio_manager(PWM_FREQUENCY);
 
 void setup() {
     Serial.begin(115200);
-    while (!Serial) {
+    while (!Serial && millis() < 3000) { // Add timeout
         delay(10);
     }
     Serial.println("Starting setup...");
     
     gpio_manager.initialize(CAN_OBJECTS, sizeof(CAN_OBJECTS) / sizeof(CAN_OBJECTS[0]));
+    
+    // Add try-catch equivalent for robustness
+    if (!Can0.begin()) {
+        Serial.println("CAN initialization failed!");
+        while (1) { delay(100); } // Halt on failure
+    }
+    
     CANBusGateway gateway(CAN_OBJECTS, sizeof(CAN_OBJECTS) / sizeof(CAN_OBJECTS[0]), 
                          gpio_manager);
     

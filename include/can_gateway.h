@@ -16,12 +16,30 @@ public:
         CANBusGateway::object_count = object_count;
         CANBusGateway::gpio_manager = &gpio_manager;
         
-        Can0.begin();
+        // Enhanced CAN initialization
         Can0.setBaudRate(CAN_BAUDRATE);
         Can0.setMaxMB(16);
         Can0.enableFIFO();
         Can0.enableFIFOInterrupt();
         Can0.onReceive(CANBusGateway::handle_message);
+        
+        // Set up message filters
+        Can0.setMBFilter(REJECT_ALL);
+        Can0.setMBFilter(MB0, 0x18EFFF21); // BlinkMarine
+        Can0.setMBFilter(MB1, 0x7C);       // MaxxECU
+        Can0.setMBFilter(MB2, 0x7D);
+        Can0.setMBFilter(MB3, 0x7F);
+        
+        // Error handling
+        Can0.onError([]() {
+            static uint32_t error_count = 0;
+            if (++error_count > CAN_ERROR_THRESHOLD) {
+                Serial.println("CAN Error threshold exceeded - Resetting");
+                Can0.reset();
+                error_count = 0;
+            }
+        });
+        
         Serial.println("CANBusGateway initialized");
         
         // Initialize states
