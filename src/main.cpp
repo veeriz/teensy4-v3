@@ -1,9 +1,9 @@
 #include <Arduino.h>
 // Public APIs from include/
-#include "fan_controller.h"
-#include "gpio_manager.h"
-#include "fan_safety.h"
-#include "can_gateway.h"
+#include "../include/fan_controller.h"
+#include "../include/gpio_manager.h"
+#include "../include/fan_safety.h"
+#include "../include/can_gateway.h"
 // Internal headers from src/
 #include "config.h"
 #include "message_types.h"
