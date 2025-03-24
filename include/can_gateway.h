@@ -23,13 +23,16 @@ public:
         Can0.enableFIFOInterrupt();
         Can0.onReceive(CANBusGateway::handle_message);
         
-        // Set up message filters - Updated to include Start Key (0x07B) - Updated to include Start Key (0x07B)
+        // Set up message filters - Updated to include Start Key (0x07B)
         Can0.setMBFilter(REJECT_ALL);
         Can0.setMBFilter(MB0, 0x18EFFF21); // BlinkMarine
         Can0.setMBFilter(MB1, 0x07B);      // StartKey
-        Can0.setMBFilter(MB2, 0x7C);       // MaxxECU
+        Can0.setMBFilter(MB2, 0x7C);       // MaxxECU, boost control?
         Can0.setMBFilter(MB3, 0x7D);       // MaxxECU
-        Can0.setMBFilter(MB4, 0x7F);       // MaxxECU
+        Can0.setMBFilter(MB4, 0x7F);       // MaxxECU, Coolant Temp
+        Can0.setMBFilter(MB5, 0x18EF2100); // LED Control
+        Can0.setMBFilter(MB6, 0x18EF2200); // LED Control
+
         
         // Error handling
         Can0.onError([]() {
