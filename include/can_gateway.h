@@ -1,8 +1,8 @@
 #ifndef CAN_GATEWAY_H
 #define CAN_GATEWAY_H
 
-#include "config.h"
-#include "message_types.h"
+#include "../src/config.h"
+#include "../src/message_types.h"
 #include "can_objects.h"
 #include "gpio_manager.h"
 #include "fan_safety.h"
