@@ -27,9 +27,11 @@ public:
         return value;
     }
 
-    static void process_maxxecu_message(const CAN_message_t& message, const MessageConfig& config) {
-        // Implementation here
-    }
+    static void process_maxxecu_message(const MessageConfig& config) {
+        for (size_t i = 0; i < config.data_type_count; i++) {
+            auto type = config.data_types[i];
+            // Process each data type
+        }
 
     static void handle_boost_control(uint16_t boost_value) {
         // Implementation here
