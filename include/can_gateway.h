@@ -244,21 +244,31 @@ public:
 
     static void check_can_bus_status() {
         CAN_error_t err;
-        bool details = true;
-        if (Can0.error(err, details)) {  // Updated error check
-            Serial.printf("CAN error detected: %d\n", err);
-            restart_CAN();
+        if (Can0.error(err, true)) {  // Set printDetails to true
+            Serial.printf("CAN error detected: ESR1=0x%08X\n", err.ESR1);
+            if (err.ESR1 & (1 << 17)) {  // Bus Off condition
+                restart_CAN();
+            }
         }
     }
 
     static void restart_CAN() {
         Serial.println("Restarting CAN bus...");
-        Can0.begin();
+        Can0.reset();  // Use reset instead of full reinitialization
         Can0.setBaudRate(CAN_BAUDRATE);
         Can0.setMaxMB(16);
         Can0.enableFIFO();
         Can0.enableFIFOInterrupt();
         Can0.onReceive(CANBusGateway::handle_message);
+        
+        // Reapply filters
+        Can0.setMBFilter(REJECT_ALL);
+        Can0.setMBFilter(MB0, 0x18EFFF21);
+        Can0.setMBFilter(MB1, 0x07B);
+        Can0.setMBFilter(MB2, 0x7C);
+        Can0.setMBFilter(MB3, 0x7D);
+        Can0.setMBFilter(MB4, 0x7F);
+        
         Serial.println("CAN bus restarted");
     }
 
