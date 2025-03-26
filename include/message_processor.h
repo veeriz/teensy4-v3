@@ -1,7 +1,8 @@
 #ifndef MESSAGE_PROCESSOR_H
 #define MESSAGE_PROCESSOR_H
 
-#include "message_types.h"
+#include <FlexCAN_T4.h>
+#include "../src/message_types.h"
 #include "fan_controller.h"
 
 class MessageProcessor {
@@ -9,6 +10,33 @@ public:
     static FanController& get_fan_controller() {
         static FanController fan_controller;
         return fan_controller;
+    }
+
+    template<typename T>
+    static T extract_value(const uint8_t* buf, size_t offset, bool little_endian) {
+        T value = 0;
+        if (little_endian) {
+            for (size_t i = 0; i < sizeof(T); i++) {
+                value |= static_cast<T>(buf[offset + i]) << (i * 8);
+            }
+        } else {
+            for (size_t i = 0; i < sizeof(T); i++) {
+                value |= static_cast<T>(buf[offset + i]) << ((sizeof(T) - 1 - i) * 8);
+            }
+        }
+        return value;
+    }
+
+    static void process_maxxecu_message(const CAN_message_t& message, const MessageConfig& config) {
+        // Implementation here
+    }
+
+    static void handle_boost_control(uint16_t boost_value) {
+        // Implementation here
+    }
+
+    static void handle_launch_control(uint16_t rpm, uint16_t timer) {
+        // Implementation here
     }
 
     // For 16-bit temperature

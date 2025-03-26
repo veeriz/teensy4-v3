@@ -49,15 +49,8 @@ public:
         Can0.setMBFilter(MB6, 0x18EF2200); // LED Control
 
         
-        // Error handling
-        Can0.onError([&Can0]() {
-            static uint32_t error_count = 0;
-            if (++error_count > CAN_ERROR_THRESHOLD) {
-                Serial.println("CAN Error threshold exceeded - Resetting");
-                Can0.reset();
-                error_count = 0;
-            }
-        });
+        // Error handling - using events() instead of onError
+        Can0.events();  // Process any pending events
         
         Serial.println("CANBusGateway initialized");
         
@@ -250,8 +243,9 @@ public:
     }
 
     static void check_can_bus_status() {
-        CAN_error_t err = Can0.error();
-        if (err != ERROR_OK) {
+        CAN_error_t err;
+        bool details = true;
+        if (Can0.error(err, details)) {  // Updated error check
             Serial.printf("CAN error detected: %d\n", err);
             restart_CAN();
         }
