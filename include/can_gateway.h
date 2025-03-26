@@ -1,6 +1,7 @@
 #ifndef CAN_GATEWAY_H
 #define CAN_GATEWAY_H
 
+#include <FlexCAN_T4.h>
 // Include files from src directory need ../src/
 #include "../src/config.h"
 #include "../src/message_types.h"
@@ -9,6 +10,9 @@
 #include "gpio_manager.h"
 #include "fan_safety.h"
 #include "message_processor.h"
+
+// Declare FlexCAN instance
+extern FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can0;
 
 class CANBusGateway {
 private:
@@ -46,7 +50,7 @@ public:
 
         
         // Error handling
-        Can0.onError([]() {
+        Can0.onError([&Can0]() {
             static uint32_t error_count = 0;
             if (++error_count > CAN_ERROR_THRESHOLD) {
                 Serial.println("CAN Error threshold exceeded - Resetting");
@@ -140,7 +144,7 @@ public:
                     case 0x7F: {  // Engine Temperature
                         int16_t temp = MessageProcessor::extract_value<int16_t>(
                             message.buf, 0, config.little_endian);
-                        MessageProcessor::handle_engine_temp(temp);
+                        MessageProcessor::handle_engine_temp(temp, gpio_manager);  // Add gpio_manager parameter
                         break;
                     }
                 }

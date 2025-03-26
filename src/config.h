@@ -7,7 +7,9 @@
 #include <vector>
 
 // CAN bus configuration
+#ifndef CAN_BAUDRATE
 const int CAN_BAUDRATE = 500000;  // 500kbps
+#endif
 const int DEBOUNCE_DELAY = 50;    // Base debounce delay in milliseconds
 
 // GPIO setup for PWM
