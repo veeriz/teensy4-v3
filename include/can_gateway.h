@@ -1,8 +1,10 @@
 #ifndef CAN_GATEWAY_H
 #define CAN_GATEWAY_H
 
+// Include files from src directory need ../src/
 #include "../src/config.h"
 #include "../src/message_types.h"
+// Include files from same directory don't need path
 #include "can_objects.h"
 #include "gpio_manager.h"
 #include "fan_safety.h"

@@ -1,10 +1,10 @@
 #include <Arduino.h>
-// Public APIs from include/
+// Public APIs from include/ - fix relative paths
 #include "../include/fan_controller.h"
 #include "../include/gpio_manager.h"
 #include "../include/fan_safety.h"
 #include "../include/can_gateway.h"
-// Internal headers from src/
+// Internal headers from same directory
 #include "config.h"
 #include "message_types.h"
 
