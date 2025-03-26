@@ -4,7 +4,7 @@
 #include <vector>
 #include <initializer_list>
 
-enum class DataType {
+enum class DataType : uint8_t {  // Reduce enum size
     UINT8,
     UINT16,
     INT16,
@@ -19,12 +19,11 @@ struct MessageConfig {
     std::vector<DataType> data_types;
     bool little_endian;
 
-    // Constructor for initialization
-    MessageConfig(uint32_t _id, uint8_t _len, const char* _desc, uint8_t _mask,
-                 std::initializer_list<DataType> _types, bool _le) 
+    constexpr MessageConfig(uint32_t _id, uint8_t _len, const char* _desc, uint8_t _mask,
+                 std::initializer_list<DataType> _types, bool _le) noexcept
         : id(_id), data_length(_len), description(_desc), mask(_mask),
           data_types(_types), little_endian(_le) {}
-};
+} __attribute__((packed));  // Reduce structure size
 
 // Define configurations using the constructor
 const MessageConfig MAXXECU_CONFIGS[] = {
